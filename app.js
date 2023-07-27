@@ -59,24 +59,46 @@ function addSlide(source, parent) {
   parent.appendChild(section);
 }
 
-async function test() {
-  slides = await waitUntilLoaded("section");
-  radios = await waitUntilLoaded("input[type='radio']");
-}
+function createRadios(number) {
+  const radio = document.createElement("input");
+  radio.type = "radio";
+  radio.name = "item";
+  radio.checked = "checked";
+  radio.id = "section1";
+  document.body.appendChild(radio);
 
-test();
+  for (let i = 2; i <= number; i++) {
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "item";
+    radio.id = "section" + i;
+    document.body.appendChild(radio);
+  }
+
+  const nav = document.createElement("nav");
+  nav.classList.add("nav");
+  for (let i = 1; i <= number; i++) {
+    const label = document.createElement("label");
+    label.classList.add("nav-item");
+    label.htmlFor = "section" + i;
+    nav.appendChild(label);
+  }
+
+  document.body.appendChild(nav);
+}
 
 async function loadSlides() {
   addAnimation("assets/animation/intro.mp4", document.body);
   const slidePaths = await getSlides();
+  createRadios(slidePaths.length);
   slidePaths.forEach((slidePath) => {
     addSlide(slidePath, document.body);
   });
   addAnimation("assets/animation/intro.mp4", document.body);
 
-  // slides = await waitUntilLoaded("section");
-  // radios = await waitUntilLoaded("input[type='radio']");
-  // slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
+  slides = await waitUntilLoaded("section");
+  radios = await waitUntilLoaded("input[type='radio']");
+  slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
 }
 
 loadSlides();
