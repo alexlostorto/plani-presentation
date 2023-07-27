@@ -1,3 +1,37 @@
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+async function getSlides() {
+  const response = await fetch("https://api.github.com/repos/alexlostorto/plani-presentation/git/trees/main?recursive=1");
+  const data = await response.json();
+  const slides = [];
+  data.tree.forEach((slide) => {
+    if (slide.path.includes("assets/slides/")) {
+      slides.push(slide.path);
+    }
+  });
+
+  return sortByDigits(slides);
+}
+
+function sortByDigits(array) {
+  const regex = /\D/g;
+  array.sort(function (a, b) {
+    return parseInt(a.replace(regex, ""), 10) - parseInt(b.replace(regex, ""), 10);
+  });
+  return array;
+}
+
+async function waitUntilLoaded(selector) {
+  let trials = 0;
+  while (document.querySelectorAll(selector) === null && trials <= 10) {
+    await sleep(100);
+    trials++;
+  }
+  return document.querySelectorAll(selector);
+}
+
 function addAnimation(source, parent) {
   const section = document.createElement("section");
   const video = document.createElement("video");
@@ -20,14 +54,25 @@ function addSlide(source, parent) {
   parent.appendChild(section);
 }
 
-function loadSlides() {
-  addAnimation("assets/slides/Plani Intro.mp4", document.body);
-  addSlide("assets/slides/Plani Intro.mp4", document.body);
+async function loadSlides() {
+  slides = await waitUntilLoaded("section");
+  radios = await waitUntilLoaded("input[type='radio']");
+
+  addAnimation("assets/animation/intro.mp4", document.body);
+  const slidePaths = await getSlides();
+  slidePaths.forEach((slidePath) => {
+    addSlide(slidePath, document.body);
+  });
+  addAnimation("assets/animation/intro.mp4", document.body);
+
+  slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
 }
 
+loadSlides();
+
 let activeSlide = 1;
-let slides = document.querySelectorAll("section");
-let radios = document.querySelectorAll("input[type='radio']");
+let slides = null;
+let radios = null;
 
 function moveSlideUp() {
   slides[activeSlide].style.top = 0;
@@ -66,5 +111,3 @@ document.addEventListener("keydown", (event) => {
     moveSlideDown();
   }
 });
-
-slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
