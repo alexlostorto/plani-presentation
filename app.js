@@ -1,3 +1,7 @@
+let activeSlide = 1;
+let slides = null;
+let radios = null;
+
 const sleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -25,8 +29,8 @@ function sortByDigits(array) {
 
 async function waitUntilLoaded(selector) {
   let trials = 0;
-  while (document.querySelectorAll(selector) === null && trials <= 10) {
-    await sleep(100);
+  while (document.querySelectorAll(selector).length == 0 && trials <= 10) {
+    await sleep(250);
     trials++;
   }
   return document.querySelectorAll(selector);
@@ -55,9 +59,6 @@ function addSlide(source, parent) {
 }
 
 async function loadSlides() {
-  slides = await waitUntilLoaded("section");
-  radios = await waitUntilLoaded("input[type='radio']");
-
   addAnimation("assets/animation/intro.mp4", document.body);
   const slidePaths = await getSlides();
   slidePaths.forEach((slidePath) => {
@@ -65,14 +66,12 @@ async function loadSlides() {
   });
   addAnimation("assets/animation/intro.mp4", document.body);
 
+  slides = await waitUntilLoaded("section");
+  radios = await waitUntilLoaded("input[type='radio']");
   slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
 }
 
 loadSlides();
-
-let activeSlide = 1;
-let slides = null;
-let radios = null;
 
 function moveSlideUp() {
   slides[activeSlide].style.top = 0;
