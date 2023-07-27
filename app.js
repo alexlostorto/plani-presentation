@@ -95,7 +95,6 @@ async function loadSlides() {
     addSlide(slidePath, document.body);
   });
   addAnimation("assets/animation/intro.mp4", document.body);
-
   slides = await waitUntilLoaded("section");
   radios = await waitUntilLoaded("input[type='radio']");
   slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
