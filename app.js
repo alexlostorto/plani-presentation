@@ -88,9 +88,9 @@ function createRadios(number) {
 }
 
 async function loadSlides() {
-  addAnimation("assets/animation/intro.mp4", document.body);
   const slidePaths = await getSlides();
   createRadios(slidePaths.length);
+  addAnimation("assets/animation/intro.mp4", document.body);
   slidePaths.forEach((slidePath) => {
     addSlide(slidePath, document.body);
   });
