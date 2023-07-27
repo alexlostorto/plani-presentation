@@ -54,9 +54,17 @@ function addSlide(source, parent) {
   const section = document.createElement("section");
   const image = document.createElement("img");
   image.src = source;
+  image.loading = "lazy";
   section.appendChild(image);
   parent.appendChild(section);
 }
+
+async function test() {
+  slides = await waitUntilLoaded("section");
+  radios = await waitUntilLoaded("input[type='radio']");
+}
+
+test();
 
 async function loadSlides() {
   addAnimation("assets/animation/intro.mp4", document.body);
@@ -66,9 +74,9 @@ async function loadSlides() {
   });
   addAnimation("assets/animation/intro.mp4", document.body);
 
-  slides = await waitUntilLoaded("section");
-  radios = await waitUntilLoaded("input[type='radio']");
-  slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
+  // slides = await waitUntilLoaded("section");
+  // radios = await waitUntilLoaded("input[type='radio']");
+  // slides.forEach((slide) => slide.addEventListener("click", moveSlideUp));
 }
 
 loadSlides();
